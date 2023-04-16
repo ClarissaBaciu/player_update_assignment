@@ -47,24 +47,35 @@ class TestCase(unittest.TestCase):
         versions = expectedVersions
         self.assertEqual(versions, expectedVersions)
 
-    @patch("requests.put")
-    def testUpdateVersion(self, mock_put):
-        """
-        test updateVersion() function
-        """
-        mock_put.return_value.status_code = 200
-        api_url = "https://fake_api_url.com"
-        auth_token = "fake_auth_token"
-        body = {"key": "value"}
-        mac_address = "a1:bb:cc:dd:ee:ff"
-
-        # response_status = update_software_version(api_url, mac_address, auth_token, body)
-        # responseStatus = {"wtv"}
-        # self.assertEqual(response_status, 200)
 
 
-    
-    
+
+    #have test for each response
+
+    # @patch("requests.put")
+    # def testUpdateVersion(self, mock_put):
+    #     """
+    #     test updateVersion() function
+    #     """
+    #     mock_put.return_value.status_code = 200
+    #     api_url = "https://fake_api_url.com"
+    #     auth_token = "fake_auth_token"
+    #     body = {"key": "value"}
+    #     mac_address = "a1:bb:cc:dd:ee:ff"
+
+    #     # response_status = update_software_version(api_url, mac_address, auth_token, body)
+    #     # responseStatus = {"wtv"}
+    #     # self.assertEqual(response_status, 200)
+
+
+
+    #add test for updateAllVersion? not sure how 
+
+
+
+    # integration test? /unit test
+
+
     def tearDown(self) -> None:
         os.remove(TEST_CSV_FILE_NAME) #delete test file
 
