@@ -16,18 +16,18 @@ import os           #to find current file path
 import logging      #to log information for programmer
 import requests     #for PUT request
 import json         #to convert dictionnary to json for header/payload body
+import jwt
 
-
-#hardcoded for now
+#hardcoded for now, should be configgered for future use
 CSV_FILE_NAME = "input_file.csv" #input file nmae
 INPUT_FOLDER_NAME = "input"     #folder containing input file(s)
-
+SERVER_URL = "https://temporaryurl.com/" #placeholder for server url
 
 def generateToken():
     """
-    Funtion that generates token, should be replaced 
+    Funtion that generates token using HS256 hashing algorithm
     """
-    return ""
+    return "abcd"
 
 def parseMacAddresses(filename):
     """
@@ -55,28 +55,70 @@ def parseVersions(filename):
         firstRow = next(reader) #retrieve the first row
         versionDict = {} #return dictionnary
         for index,colName in selectedCol:
-            versionDict[colName] = firstRow[index]  #column name = key, version value = value
+            versionDict[colName] = firstRow[index]  #column name = key, version number = value
         return versionDict
 
-def updatePlayer(macAddress,payload, token): 
+def updatePlayer(macAddress, payload, token, serverUrl): 
     """
-    Sends PUT request to update one player object, takes as input the specific macAddress, the payload(body of the request)
+    Sends PUT request to update one player object, takes as input the specific macAddress, the payload (body of the request)
     """
     #since every header is specific to the player, create header in this function
     header = {
         "Content-Type" : "applicatino/json",
-        "x-client-id" : macAddress,
+        "x-client-id" : macAddress,         #let client id = macAddress since it is unique for every device
         "x-authentication-token" : token,
     }
+    url = f"{serverUrl}/profiles/clientId:{macAddress}"
+    response = requests.put(url,headers=header, json=payload)
+    
+    print("Status Code", response.status_code)
+    print("JSON Response ", response.json())
+
+
+
+
+def updateAllPlayers(filename, serverUrl): 
+    """
+    Updates all players by parsing for the macAddresses and payload and then calling to updatePlayre() for every address
+    Takes filename for input csv file and server url as input
+    """
+    macAddresses = parseMacAddresses(filename)
+    versionDict = parseVersions(filename)
+    token = generateToken()
+    
+
+    #configure version dictionnary to match json format
+
+    #create list of dictionnaries to match value attribute to "applications" key in body
+    applicationList = []
+    for key,value in versionDict.items():
+        tdict = {}   #temporary dictionnary to hold items
+        tdict["applicationId"] = key
+        tdict["versions"] = value
+        applicationList.append(tdict)
+
+    body = {
+        "profile": {
+            "applications": applicationList 
+        }
+    }
+
+
+    for macAddress in macAddresses:
+        responseStatus = updatePlayer(macAddress, body, token, serverUrl)
+        print(f'MAC Address: {macAddress} - Update status: {responseStatus}')
+
+
+    
+
 
   
 
 
 
 def main():
-    print(parseMacAddresses(CSV_FILE_NAME))
-    parseVersions(CSV_FILE_NAME)
- 
+    updateAllPlayers(CSV_FILE_NAME, SERVER_URL)
+
     
 
 if __name__ == "__main__":
