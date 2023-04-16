@@ -27,23 +27,23 @@ class TestCase(unittest.TestCase):
             writer = csv.writer(f)
             writer.writerows(test_input)
 
-    def testReadMacAddresses1(self):
+    def testParseMacAddresses(self):
         """
         testing readMacAddresses() function
         """
         expectedAddresses = ["a1:bb:cc:dd:ee:ff","a2:bb:cc:dd:ee:ff"]
-        # macAddresses = readMacAddresses(TEST_CSV_FILE_NAME)
+        # macAddresses = parseMacAddresses(TEST_CSV_FILE_NAME)
         macAddresses = expectedAddresses
         # self.assertEqual(macAddresses, expectedAddresses)
         self.assertEqual(macAddresses, expectedAddresses)
 
     
-    def testReadVersions(self):
+    def testParseVersions(self):
         """
         testing readVersions() function
         """
         expectedVersions= {"music_app":"v1.4.10","diagnositc_app":"v1.2.6","settings_app":"v1.1.5" }
-        # versions = readVersions(TEST_CSV_FILE_NAME)
+        # versions = parseVersions(TEST_CSV_FILE_NAME)
         versions = expectedVersions
         self.assertEqual(versions, expectedVersions)
 
@@ -84,7 +84,7 @@ class TestCase(unittest.TestCase):
 
 
 def main():
-    unittest.main()
+    unittest.main() 
     
 
 
