@@ -10,11 +10,6 @@ setup(
     install_requires=[
         "requests"
     ],
-    package_dir={'': 'src'},
     package_data={'tool': ['tool/input_data.csv']},
-    entry_points={
-        'console_scripts': ['your-command=tool.player_update:main']
-    },
-
 
 )

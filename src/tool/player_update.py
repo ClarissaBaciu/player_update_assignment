@@ -119,16 +119,16 @@ def updateAllPlayers(filename, serverUrl):
     
     for macAddress in macAddresses:
         response = updatePlayer(macAddress, body, token, serverUrl)
+        if (response is None):
+            logging.error(f"Response is inexistant for {macAddress}")
+            continue #continue to the next mac address
         logging.info(f'MAC Address: {macAddress} - Status: {response.status_code}')
         if (response.status_code!=200):                        #if response is not 200, log the error and error message
             if response.headers.get('Content-Type') == 'application/json':  #only log if the information is present in the response
                 responseDict = response.json()
                 logging.error(f'error: {responseDict["error"]}')
                 logging.error(f'message: {responseDict["message"]}')
-        if (response.status_code is None):
-            logging.error(f"Response is inexistant for {macAddress}")
 
-            continue
 
 
 
