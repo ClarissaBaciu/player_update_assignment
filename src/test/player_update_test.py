@@ -10,17 +10,14 @@ __email__ = "clarissa.baciu@mail.mcgill.ca"
 __status__ = "Production"
 
 import unittest #for unit tests
-import csv #for reading and writing to csv
-import os
 from unittest.mock import patch,MagicMock
-import json
+
 #temporary fix for the imports
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from tool import player_update
+
 from tool.player_update import *
-from tool.player_update import updatePlayer
 
 
 class TestCase(unittest.TestCase):
@@ -204,9 +201,6 @@ class TestCase(unittest.TestCase):
         mockUpdatePlayer.assert_called_with(self.testMacAddress2, self.expectedPayload,mockGenerateToken.return_value,self.testServerUrl) #only check for last address
         self.assertEqual(mockUpdatePlayer.call_count,2)#    check that updatePlayer was called twice 
 
-
-    # def tearDown(self) -> None:
-    #     os.remove(TEST_CSV_FILE_NAME) #delete test file
 
 
 
