@@ -6,7 +6,6 @@ setup(
     description='Tool to update thousands music players using an API',
     author='clarissa baciu',
     author_email='clarissa.baciu@mail.mcgill.ca',
-    packages=find_packages('src'),
     install_requires=[
         "requests"
     ],
