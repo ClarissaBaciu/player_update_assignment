@@ -102,7 +102,7 @@ a4:bb:cc:dd:ee:ff,  1,      2,       3,     v1.4.10,        v1.2.6,         v1.1
 ### Troubleshoot
 
 - If a *File not found* message appears, it signifies the input file has not been named or saved properly.
-- If a *Error while handling request* message appears, the API request has not been properly configured which may be attributed to the input being improperly configured or the server url being innacurate.
+- If a *Error while handling request* message appears, the API request has not been properly configured which may be attributed to the input being improperly configured or the server URL being innacurate.
 - If a *Response is inexistant* message appears, there may be a problem with the URL provided.
 
 
@@ -116,7 +116,7 @@ Main program file. Situated in *src > tool*. Can be run as specified in step 5 o
 Imports:  
 - os library for configuring paths
 - csv library for parsing the input csv file
-- logging library for loggin error information
+- logging library for logging error information
 - requests library for sending HTTP request
 - sys library for retrieving command line arguments
 
@@ -130,7 +130,7 @@ Functions:
 ```parseMacAddresses(filename)```
 - Parameters: CSV file
 - Output: List of MAC addresses
-- Description: Parses through CSV file taken as input and returns a list of macAddresses.
+- Description: Parses through CSV file taken as input and returns a list of MAC addresses.
 
 ```parseMacAddresses(filename)```
 - Parameters: Input CSV filename
