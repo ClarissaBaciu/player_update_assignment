@@ -16,7 +16,8 @@ import os           #to find current file path
 import logging      #to log information for programmer
 import requests     #for PUT request
 import json         #to convert dictionnary to json for header/payload body
-import jwt
+
+
 
 logging.basicConfig(level=logging.DEBUG) #for logging information
 
