@@ -10,48 +10,48 @@ __version__ = "1.0.0"
 __email__ = "clarissa.baciu@mail.mcgill.ca"
 __status__ = "Production"
 
-
+import os
 import csv
-import os           #to find current file path
 import logging      #to log information for programmer
 import requests     #for PUT request
-import json         #to convert dictionnary to json for header/payload body
-
-
+import sys
 
 logging.basicConfig(level=logging.DEBUG) #for logging information
 
 #hardcoded for now, should be configgered for future use
 CSV_FILE_NAME = "input_file.csv" #input file nmae
-INPUT_FOLDER_NAME = "input"     #folder containing input file(s)
 SERVER_URL = "https://temporaryurl.com/" #placeholder for server url
 
 def generateToken():
     """
     Funtion that generates token, should be replaced by an expiring token in the future
     """
+    logging.info("Generating authentification token.")
     return "temporary_token"
 
 def parseMacAddresses(filename):
     """
     Parses through CSV file taken as input and returns a list of macAddresses 
     """
-    filepath = os.path.join(os.path.dirname(__file__),INPUT_FOLDER_NAME,filename) #joins path to input directory to filename
+    logging.info(f"Parsing file for addresses: {filename}")
+    filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)),filename) #join filepath of current directory to filename
     try:
         with open(filepath, newline='') as f:
             reader = csv.reader(f)
             next(reader)            #skips header
             macAddresses = [row[0] for row in reader]
+            return macAddresses
     except FileNotFoundError:
-        logging.error(f"File not found: {filepath}")
-    return macAddresses
-
+        logging.error(f"File not found for mac address parsing: {filepath}")
+        raise FileNotFoundError() #for testing purposes
+    
 def parseVersions(filename):
     """
     Parses through the first row to collect each version (assuming each device is getting updated with the same version)
     (subject to change if payload is submitted as a JSON input to the program instead, may be more efficient this way)
     """
-    filepath = os.path.join(os.path.dirname(__file__),INPUT_FOLDER_NAME,filename) #joins path to input directory to filename
+    logging.info(f"Parsing file for versions: {filename}")
+    filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)),filename)   #join filepath of current directory to filename
     try:
         with open(filepath, newline='') as f:
             reader = csv.reader(f)   
@@ -63,9 +63,12 @@ def parseVersions(filename):
             versionDict = {} #return dictionnary
             for index,colName in selectedCol:
                 versionDict[colName] = firstRow[index]  #column name = key, version number = value
+            return versionDict
+        
     except FileNotFoundError:
-        logging.error(f"File not found: {filepath}")
-    return versionDict
+        logging.error(f"File not found for version parsing: {filepath}")
+        raise FileNotFoundError() #for testing purposes 
+    
 
 def updatePlayer(macAddress, payload, token, serverUrl): 
     """
@@ -78,20 +81,20 @@ def updatePlayer(macAddress, payload, token, serverUrl):
         "x-authentication-token" : token,
     }
     url = f"{serverUrl}/profiles/clientId:{macAddress}"
+    logging.info(f"Sending PUT request: {url}")
     try: 
         response = requests.put(url,headers=header, json=payload)
+        return response
     except requests.RequestException:
         logging.error(f"Error while sending request to {url}")
+        return None #return none if exception has been raised
     
-    print("Status Code", response.status_code)
-    print("JSON Response ", response.json())
-
 
 
 
 def updateAllPlayers(filename, serverUrl): 
     """
-    Updates all players by parsing for the macAddresses and payload and then calling to updatePlayre() for every address
+    Updates all players by parsing for the macAddresses and payload and then calling to updatePlayer() for every address
     Takes filename for input csv file and server url as input
     """
     macAddresses = parseMacAddresses(filename)
@@ -103,49 +106,47 @@ def updateAllPlayers(filename, serverUrl):
     applicationList = []
     for key,value in versionDict.items():
         tdict = {}   #temporary dictionnary to hold items
-        tdict["applicationId"] = key
-        tdict["versions"] = value
+        tdict["applicationId"] = key  
+        tdict["version"] = value
         applicationList.append(tdict)
 
+    #corresponds to specified request payload format
     body = {
         "profile": {
             "applications": applicationList 
         }
     }
-
-
+    
     for macAddress in macAddresses:
-        responseStatus = updatePlayer(macAddress, body, token, serverUrl)
-        print(f'MAC Address: {macAddress} - Update status: {responseStatus}')
-        if (responseStatus is None):
+        response = updatePlayer(macAddress, body, token, serverUrl)
+        logging.info(f'MAC Address: {macAddress} - Status: {response.status_code}')
+        if (response.status_code!=200):                        #if response is not 200, log the error and error message
+            if response.headers.get('Content-Type') == 'application/json':  #only log if the information is present in the response
+                responseDict = response.json()
+                logging.error(f'error: {responseDict["error"]}')
+                logging.error(f'message: {responseDict["message"]}')
+        if (response.status_code is None):
             logging.error(f"Response is inexistant for {macAddress}")
 
+            continue
 
-
-    
-
-
-  
 
 
 
 def main():
-    updateAllPlayers(CSV_FILE_NAME, SERVER_URL)
+    if len(sys.argv) != 2:
+        logging.error("Please input the following into the command line: python -m tool <server_url>")
+        sys.exit(1)
+     #getting arguments from command prompt
+    server_url = sys.argv[1]
+    logging.info(f"Starting update at the following server URL: {server_url}")
+
+    
+    updateAllPlayers(CSV_FILE_NAME, server_url)
 
     
 
 if __name__ == "__main__":
     main()
 
-
-
-# # Making a PUT request
-# r = requests.put('https://httpbin.org / put', data ={'key':'value'})
- 
-# # check status code for response received
-# # success code - 200
-# print(r)
- 
-# # print content of request
-# print(r.content)
 
