@@ -1,6 +1,6 @@
 # Player Developer Tech Assignment
 
-This project involves creating a production-ready tool that facilitates the updating of thousands of music players simultaneously. It does so by using an API that sends PUT request to a server that the music players than query every 15 minutes to see if a new update has presented itself. The tool takes one CSV file as input containing the MAC addresses for each music player and outputs the HTTP request.
+This project involves creating a production-ready tool that facilitates the updating of thousands of music players simultaneously. It does so by using an API that sends PUT request to a server that the music players query every 15 minutes to see if a new update has presented itself. The tool takes one CSV file as input containing the MAC addresses for each music player and outputs the HTTP request.
 
 
 
