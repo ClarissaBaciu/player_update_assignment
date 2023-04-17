@@ -18,6 +18,8 @@ import requests     #for PUT request
 import json         #to convert dictionnary to json for header/payload body
 import jwt
 
+logging.basicConfig(level=logging.DEBUG) #for logging information
+
 #hardcoded for now, should be configgered for future use
 CSV_FILE_NAME = "input_file.csv" #input file nmae
 INPUT_FOLDER_NAME = "input"     #folder containing input file(s)
@@ -25,19 +27,22 @@ SERVER_URL = "https://temporaryurl.com/" #placeholder for server url
 
 def generateToken():
     """
-    Funtion that generates token using HS256 hashing algorithm
+    Funtion that generates token, should be replaced by an expiring token in the future
     """
-    return "abcd"
+    return "temporary_token"
 
 def parseMacAddresses(filename):
     """
     Parses through CSV file taken as input and returns a list of macAddresses 
     """
     filepath = os.path.join(os.path.dirname(__file__),INPUT_FOLDER_NAME,filename) #joins path to input directory to filename
-    with open(filepath, newline='') as f:
-        reader = csv.reader(f)
-        next(reader)            #skips header
-        macAddresses = [row[0] for row in reader]
+    try:
+        with open(filepath, newline='') as f:
+            reader = csv.reader(f)
+            next(reader)            #skips header
+            macAddresses = [row[0] for row in reader]
+    except FileNotFoundError:
+        logging.error(f"File not found: {filepath}")
     return macAddresses
 
 def parseVersions(filename):
@@ -46,17 +51,20 @@ def parseVersions(filename):
     (subject to change if payload is submitted as a JSON input to the program instead, may be more efficient this way)
     """
     filepath = os.path.join(os.path.dirname(__file__),INPUT_FOLDER_NAME,filename) #joins path to input directory to filename
-    with open(filepath, newline='') as f:
-        reader = csv.reader(f)   
-        header = next(reader)   #retrieve header
-        #enumerate returns a tupple containing the index and column name
-        #only selecting for columns that have the app substring since it means it is an app whose version needs to updated
-        selectedCol = [(index,colName) for index,colName in enumerate(header) if "app" in colName] 
-        firstRow = next(reader) #retrieve the first row
-        versionDict = {} #return dictionnary
-        for index,colName in selectedCol:
-            versionDict[colName] = firstRow[index]  #column name = key, version number = value
-        return versionDict
+    try:
+        with open(filepath, newline='') as f:
+            reader = csv.reader(f)   
+            header = next(reader)   #retrieve header
+            #enumerate returns a tupple containing the index and column name
+            #only selecting for columns that have the app substring since it means it is an app whose version needs to updated
+            selectedCol = [(index,colName) for index,colName in enumerate(header) if "app" in colName] 
+            firstRow = next(reader) #retrieve the first row
+            versionDict = {} #return dictionnary
+            for index,colName in selectedCol:
+                versionDict[colName] = firstRow[index]  #column name = key, version number = value
+    except FileNotFoundError:
+        logging.error(f"File not found: {filepath}")
+    return versionDict
 
 def updatePlayer(macAddress, payload, token, serverUrl): 
     """
@@ -69,7 +77,11 @@ def updatePlayer(macAddress, payload, token, serverUrl):
         "x-authentication-token" : token,
     }
     url = f"{serverUrl}/profiles/clientId:{macAddress}"
-    response = requests.put(url,headers=header, json=payload)
+    try: 
+        # response = requests.put(url,headers=header, json=payload)
+        response = {"ok":"ok"}
+    except requests.RequestException:
+        logging.error(f"Error while sending request to {url}")
     
     print("Status Code", response.status_code)
     print("JSON Response ", response.json())
@@ -85,10 +97,8 @@ def updateAllPlayers(filename, serverUrl):
     macAddresses = parseMacAddresses(filename)
     versionDict = parseVersions(filename)
     token = generateToken()
-    
 
     #configure version dictionnary to match json format
-
     #create list of dictionnaries to match value attribute to "applications" key in body
     applicationList = []
     for key,value in versionDict.items():
@@ -107,6 +117,9 @@ def updateAllPlayers(filename, serverUrl):
     for macAddress in macAddresses:
         responseStatus = updatePlayer(macAddress, body, token, serverUrl)
         print(f'MAC Address: {macAddress} - Update status: {responseStatus}')
+        if (responseStatus is None):
+            logging.error(f"Response is inexistant for {macAddress}")
+
 
 
     
