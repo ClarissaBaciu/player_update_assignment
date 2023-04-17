@@ -1,18 +1,17 @@
 # Player Developer Tech Assignment
 
-This project involves creating a production-ready tool that facilitates the updating of thousands of music players simultaneously. It does so by using an API that sends PUT request to a server that the music players query every 15 minutes to see if a new update has presented itself. The tool takes one CSV file as input containing the MAC addresses for each music player and outputs the HTTP request.
 
-
+This project involves creating a production-ready tool that facilitates the update of thousands of music players simultaneously. It does so by using an API that sends PUT requests to a server that the music players query every 15 minutes to see if a new update has presented itself. The tool takes one CSV file as input, which contains the MAC addresses for each music player, and it then outputs the HTTP request.
 
 
 # Table of Contents
 1. [Request Format](#request-format)
 2. [Requirements](#requirements)
 3. [Assumptions and Design Decisions](#assumptions-and-design-decisions)
-4. [Testing Approach](#testing-approach)
-5. [User Documentation](#testing-approach)
-6. [Developper Documentation](#testing-approach)
-7. [Future Improvements](#testing-approach)
+4. [User Documentation](#user-documentation)
+5. [Developper Documentation](#developper-documentation)
+6. [Future Improvements](#future-improvements)
+
 
 
 
@@ -52,12 +51,12 @@ Body
 - The project should be compatible with all operating systems.
 - Only one CSV file can be used as input to the tool. 
 - The CSV file contains, at minimum, a column for the MAC addresses, always in the first column.
-- All client ids should be unique for each device.
+- All client-IDs should be unique for each device.
 
 
 ## Assumptions and Design Decisions
 
-- Python was chosen for the assignmnent as it is compatible with all operating systems and allows an intuitive implementation of REST APIs.
+- Python was chosen for the assignment as it is compatible with all operating systems and allows an intuitive implementation of REST APIs.
 
 - The client-ID will be the MAC address of each device as they are unique for each client.
 
@@ -83,10 +82,10 @@ Body
 
 4. Navigate to the project folder.
 
-3. Make sure to have the following information on hand: mac addresses for each device to update, the application names and version numbers, and the server URL. Create a CSV file like the following and save it as *input_file.csv*/\:
+3. Make sure to have the following information on hand: mac addresses for each device to update, the application names and version numbers, and the server URL. Create a CSV file like the following and save it as *input_file.csv*:
 
 
-### Example CSV Input
+### input_file.csv
 ```
 mac_addresses,     id1,    id2,     id3,    music_app,  diagnositc_app, settings_app
 a1:bb:cc:dd:ee:ff,  1,      2,       3,     v1.4.10,        v1.2.6,         v1.1.5
@@ -104,7 +103,7 @@ a4:bb:cc:dd:ee:ff,  1,      2,       3,     v1.4.10,        v1.2.6,         v1.1
 
 - If a *File not found* message appears, it signifies the input file has not been named or saved properly.
 - If a *Error while handling request* message appears, the API request has not been properly configured which may be attributed to the input being improperly configured or the server url being innacurate.
-- If a *Response is inexistant* message appears, the MAC address specified may not exist in the server.
+- If a *Response is inexistant* message appears, there may be a problem with the URL provided.
 
 
 
@@ -118,9 +117,10 @@ Imports:
 - os library for configuring paths
 - csv library for parsing the input csv file
 - logging library for loggin error information
-- requests library for sending HTTP requests
+- requests library for sending HTTP request
+- sys library for retrieving command line arguments
 
-Functions
+Functions:
 
 ```generateToken()```
 - Parameters: None
@@ -146,12 +146,12 @@ Functions
 ```updatePlayer(macAddress, payload, token, serverUrl)```
 - Parameters: MAC address of the player to update, the payload of the request, the authentification token and the URL of the server we are sending the request to
 - Output: The request response
-- Description: Creates a header file using the MAC address and authentification token of the current device and sends a PUT request.
+- Description: Creates a header file using the MAC address and authentification token of the current device and sends a PUT request to the URL provided.
 
 ```updateAllPlayers(filename, serverUrl)```
 - Parameters: Filename of the input CSV file and server URL
 - Output: None
-- Description: Wrapper function for all other functions. Retrieves MAC addresses, version dictionnary and authentification token from the functions above, configures a body for the request using the format specified in the Request Format section of this document, iterates through the list of macAddresses and calls updatePlayer() for every device.
+- Description: Wrapper function for all other functions. Retrieves MAC addresses, version dictionnary and authentification token from the functions above, configures a body for the request using the format specified in the Request Format section of this document, iterates through the list of MAC addresses and calls updatePlayer() for every device.
 
 
 ### Player_update_test.py
@@ -159,19 +159,20 @@ Functions
 The test script was written before the main tool script. This is a more inutitive approach since the inputs and outputs of each function must be determined from the start. Each unit was tested independantly using the Unittest library and mocks were created to replace nested functions. Situated in *src > test*. Run using the following: ```python src/test/player_update_test.py```.
 
 Imports:  
-- unittest library for configuring unit tests
-- patch and MagickMock from unittest for creating mock return values and mocking API requests 
+- Unittest library for configuring unit tests
+- Patch and MagickMock from unittest for creating mock return values and mocking API requests 
 - All functions from tool.player_update for testing purposes
 
 Class
 ```TestCase(unittest.TestCase)```
-- inherits from unittest and contains methods for testing each function from player_updat.py, also has class attributes as test parameters.
+- Inherits from unittest.TestCase and contains methods for testing each function from player_update.py. It also has class attributes for all test parameters.
 
 
-Functions
+Functions:
 
 ```setUp(self)```
-- Description: Function called before every unit test. Specifies all test strings and parameters. 
+- Description: Function called before every unit test. Specifies all test strings and parameters.
+
 ```testGenerateToken(self)```
 - Description: Tests that a token has indeed been generated.
 
@@ -179,11 +180,7 @@ Functions
 - Description: Asserts that the parseMacAddress() function successfully parses through the CSV file and obtains the right MAC addresses.
 
 ```testParseVersions(self)```
-- Description: Asserts that the parseVersions() function successfully parses through the CSV file and obtains the wring application names and version numbers.
-
-```testParseVersions(self)```
-- Description: Asserts that the parseVersions() function successfully parses through the CSV file and obtains the wring application names and version numbers.
-
+- Description: Asserts that the parseVersions() function successfully parses through the CSV file and obtains the right application names and version numbers.
 
 
 
@@ -221,6 +218,6 @@ Functions
 
 - Coming from a C and Java background, CamelCase was chosen as the naming convention. In the future, underscore could be used for more compatibility with Python's build-in functions. 
 
-- It would optimize complexity and efficieny to add the payload as a separate input file in the form of a JSON file.  
+- It would optimize complexity and efficiency to add the payload as a separate input file in the form of a JSON file.  
 
 - Otherwise, instead of adding an input to the function, a GET request could be used to get the current versions of each application from the API and the appropriate application could be updated according to the scope of the update.
