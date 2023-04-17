@@ -22,7 +22,7 @@ from tool.player_update import *
 
 class TestCase(unittest.TestCase):
     """
-    class with methods to test each component of the tool and perform intergration tests and system tests
+    class with methods to test each component of the tool 
     """
     def setUp(self) -> None:    #performed for each test
         #create test data for request and other tests
@@ -48,9 +48,9 @@ class TestCase(unittest.TestCase):
         """
         testToken = generateToken()
         """
-        self.assertTrue(isValid(token)) 
+        self.assertTrue(isValid(token))  #future implementation
         """
-        self.assertTrue(testToken)  #for not just asserting the the token is not null
+        self.assertTrue(testToken)  #just asserting the the token is not null
 
     def testParseMacAddresses(self):
         """
@@ -66,7 +66,6 @@ class TestCase(unittest.TestCase):
         """
         testing readVersions() function
         """
-
         expectedVersions= {"music_app":"v1.4.10","diagnositc_app":"v1.2.6","settings_app":"v1.1.5" }
         testVersions = parseVersions(self.testFilename)
         self.assertEqual(testVersions, expectedVersions)
@@ -203,11 +202,8 @@ class TestCase(unittest.TestCase):
 
 
 
-
-
-
 def main():
-    unittest.main() 
+    unittest.main() #run all unit tests
     
 
 
