@@ -135,7 +135,7 @@ def updateAllPlayers(filename, serverUrl):
 
 def main():
     if len(sys.argv) != 2:
-        logging.error("Please input the following into the command line: python -m tool <server_url>")
+        logging.error("Please input the following into the command line: python src/tool/player_update.py <server_url>")
         sys.exit(1)
      #getting arguments from command prompt
     server_url = sys.argv[1]
