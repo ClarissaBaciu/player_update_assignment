@@ -96,7 +96,7 @@ a4:bb:cc:dd:ee:ff,  1,      2,       3,     v1.4.10,        v1.2.6,         v1.1
 
 4. Make sure to save the CSV file input in the same folder as the player_update.py file in the src/tool folder.  
 
-5. Run the following script replacing server_url by the appropriate url: ```python src/tool/player_update.py {server_url}```
+5. Navigate to the project repository and run the following script replacing server_url by the appropriate url: ```python src/tool/player_update.py {server_url}```. Or navigate to the tool folder and simply run ```python player_update.py {server_url}```.
 
 
 ### Troubleshoot
